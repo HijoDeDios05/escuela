@@ -1,11 +1,16 @@
 <?php namespace App\Controllers\API;
 
+use App\Models\EstudianteModel;
 use CodeIgniter\RESTful\ResourceController;
-class Clientes extends ResourceController    
+class Estudiantes extends ResourceController    
 {
+    public function __construct() {
+        $this->model = $this.setModel(new EstudianteModel());
+    }
 	public function index()
 	{
-		return view('welcome_message');
+        $estudiantes = $this->model->findAll();
+		return $this->respond($estudiantes);
 	}
 
 	
