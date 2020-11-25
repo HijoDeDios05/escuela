@@ -33,6 +33,7 @@ $routes->setAutoRoute(true);
 $routes->get('/', 'Home::index');
 $routes->group('api',['namespace' => 'App\Controllers\API'], function($routes){
 	$routes->get('estudiantes', 'Estudiantes::index');
+	$routes->post('estudiantes/create', 'Estudiantes::create'); 
 });
 
 /**

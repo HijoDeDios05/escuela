@@ -17,9 +17,10 @@ class Estudiantes extends ResourceController
         try {
             $estudiantes = $this->request->getJSON();
             if ($this->model->insert($estudiantes)):
-                else $this->failValidationError($this->model->validation->listErrors());
+            else:
+                return $this->failValidationError($this->model->validation->listErrors());
             endif;
-                # code...
+               
             
         } catch (\Exception $e) {
             return $this->failServerError('Ha ocurrido un error en el servidor');
