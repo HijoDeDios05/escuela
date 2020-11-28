@@ -3,21 +3,20 @@ use CodeIgniter\Model;
 
 class EstudianteModel extends Model
 {
-   protected $table = 'estudiante';
+   protected $table = 'profesor';
    protected $primaryKey = 'id';
    protected $returnType = 'array';
-   protected $allowedFields = ['nombre', 'apellido', 'genero', 'carnet', 'dui'];
+   protected $allowedFields    = ['nombre', 'apellido', 'profesion', 'telefono', 'dui'];
    protected $useTimetamps = true;
    protected $createdField = 'created_at';
    protected $updatedField = 'updated_at';
 
    protected $validationRules = [
     'nombre'    => 'required|alpha_space|min_length[3]|max_length[75]',
-    'apellido'  => 'required|alpha_space|min_length[3]|max_length[75]',
-    'dui'       => 'required|regex_match[^\\d{8}-\\d$]',
-    'genero'    => 'required|regex_match[M|F|m|f]',
-    'carnet'    => 'required|regex_match[^\\u|U\\d{8}$]',
-    'grado_id'  => 'required',
+        'apellido'  => 'required|alpha_space|min_length[3]|max_length[75]',
+        'profesion' => 'required|alpha_space|min_length[2]|max_length[3]',
+        'telefono'  => 'required|alpha_numeric_space|min_length[8]|max_length[9]',
+        'dui'       => 'required|alpha_numeric_space|min_length[10]|max_length[10]',
    ];
    protected $validationMessages = [
     'nombre' => [
@@ -39,15 +38,6 @@ class EstudianteModel extends Model
         'regex_match' => 'El formato es 00000000-0',
     ],
 
-    'genero' => [
-        'required'    => 'Este campo no puede ir vacio',
-        'regex_match' => 'Solo se permite M o F',
-    ],
-
-    'carnet' => [
-        'required'    => 'Este campo no puede ir vacio',
-        'regex_match' => 'El formato es u20200000',
-    ],
 ];
 protected $skipValidation = false;
 
