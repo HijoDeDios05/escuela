@@ -33,6 +33,16 @@ $routes->setAutoRoute(true);
 $routes->get('/', 'Home::index');
 $routes->post('/auth/login', 'Auth::login');
 $routes->group('api',['namespace' => 'App\Controllers\API','filter' => 'authFilter'], function($routes){
+
+
+	$routes->get('roles', 'Roles::index');
+	$routes->post('roles/create', 'Roles::create');
+	$routes->delete('roles/delete/(:num)', 'Roles::delete/$1');
+
+	$routes->get('usuarios', 'Usuarios::index');
+	$routes->post('usuarios/create', 'Usuarios::create');
+	$routes->delete('usuarios/delete/(:num)', 'Usuarios::delete/$1');
+
 	$routes->get('estudiantes', 'Estudiantes::index');
 	$routes->post('estudiantes/create', 'Estudiantes::create'); 
 	$routes->get('estudiantes/edit/(:num)', 'Estudiantes::edit/$1');
