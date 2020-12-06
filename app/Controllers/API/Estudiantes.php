@@ -2,95 +2,117 @@
 
 use App\Models\EstudianteModel;
 use CodeIgniter\RESTful\ResourceController;
-class Estudiantes extends ResourceController    
+
+class Estudiantes extends ResourceController
 {
-    public function __construct() {
-        $this->model = $this.setModel(new EstudianteModel());
+    public function __construct()
+    {
+        $this->model = $this->setModel(new EstudianteModel());
+        helper('access_rol');
     }
 	public function index()
 	{
-        $estudiantes = $this->model->findAll();
-		return $this->respond($estudiantes);
-	}
-    public function create()
-	{
+        
+        
         try {
-            $estudiantes = $this->request->getJSON();
-            if ($this->model->insert($estudiantes)):
-                $estudiantes->id = $this->model->insertID();
-                return $this->respondCreate();
-            else:
-                return $this->failValidationError($this->model->validation->listErrors());
-            endif;
-               
+            if(!validateAccess(array('admin', 'teacher'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
             
+            $estudiantes = $this->model->findAll();
+            return $this->respond($estudiantes);
+        } catch (\Exception $e) {
+            return $this->failServerError('Error en el servidor');
+        }
+        
+    }
+    
+    public function create()
+    {
+        try {
+            if(!validateAccess(array('admin'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
+            $estudiante = $this->request->getJSON();
+            if($this->model->insert($estudiante)) {
+                $estudiante->id = $this->model->insertID();
+               return $this->respondCreated($estudiante);
+            }else{
+                return $this->failValidationError($this->model->validation->listErrors());
+            }
         } catch (\Exception $e) {
             return $this->failServerError('Ha ocurrido un error en el servidor');
         }
     }
+
     public function edit($id = null)
 	{
-		try {
-			if ($id==null):
-				return $this->failValidationError('No se ha pasado un ID valido');
-				$estudiante= $this->model->find($id);
+        try {
+            if(!validateAccess(array('admin', 'student'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
+            if ($id == null)
+                return $this->failValidationError('No se ha pasado un Id valido');
+            
+            $estudiante = $this->model->find($id);
+            if ($estudiante == null)
+                return $this->failValidationError('No se ha encontrado un estudiante con el '.$id);
 
-				//validar que el ID no venga nulo
-			if ($estudiante == null)
-				return $this->failNotFound('No se ha encontrado un cliente con el id: '.$id);
+            return $this->respond($estudiante);
 
-				return $this->respond($estudiante);
-			endif;
-		} catch (\Exception $e) {
-			return $this->failServerError('Ha ocurrido un error en el servidor');
-		}	
-	}
+        } catch (\Exception $e) {
+            return $this->failServerError('Ha ocurrido un error en el servidor');
+        }
+    }
+    
+    public function update($id = null)
+	{
+        try {
+            if(!validateAccess(array('admin' , 'student'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
+            if ($id == null)
+                return $this->failValidationError('No se ha pasado un Id valido');
+            
+            $estudianteVerificado = $this->model->find($id);
+            if ($estudianteVerificado == null)
+                return $this->failValidationError('No se ha encontrado un estudiante con el '.$id);
 
-	public function update($id = null)
+
+            $estudiante = $this->request->getJSON();
+            if($this->model->update($id, $estudiante)) {
+                $estudiante->id = $id;
+                return $this->respondUpdated($estudiante);
+            }else{
+                return $this->failValidationError($this->model->validation->listErrors());
+            }
+
+            
+
+        } catch (\Exception $e) {
+            return $this->failServerError('Ha ocurrido un error en el servidor');
+        }
+    }
+
+    public function delete($id = null)
 	{
 		try {
-			if ($id==null)
-				return $this->failValidationError('No se ha pasado un ID valido');
-				$estudianteVerificado= $this->model->find($id);
+            if(!validateAccess(array('admin'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
+            if ($id == null)
+                return $this->failValidationError('No se ha pasado un Id valido');
+            
+            $estudianteVerificado = $this->model->find($id);
+            if ($estudianteVerificado == null)
+                return $this->failValidationError('No se ha encontrado un estudiante con el '.$id);
 
-				//validar que el ID no venga nulo
-			if ($estudianteVerificado == null)
-				return $this->failNotFound('No se ha encontrado un cliente con el id: '.$id);
+            if($this->model->delete($id)) {
+                return $this->respondDeleted($estudianteVerificado);
+            }else{
+                return $this->failServerError('No se ha podido eliminar el registro');
+            }
 
-				$estudiante =$this-> request->getJSON();
+            
 
-			if ($this->model->update($id, $estudiante)):
-				$estudiante-> id = $id;
-				return $this->respondUpdated($estudiante);
-			else:
-				return $this->failServerError($this->model->validation->listErrors());
-			endif;
-		} catch (\Exception $e) {
-			return $this->failServerError('Ha ocurrido un error en el servidor');
-		}	
+        } catch (\Exception $e) {
+            return $this->failServerError('Ha ocurrido un error en el servidor');
+        }
 	}
 
-
-	public function delete($id = null)
-	{
-		try {
-			if ($id== null)
-				return $this->failValidationError('No se ha pasado un ID valido');
-				$estudianteVerificado= $this->model->find($id);
-
-				//validar que el ID no venga nulo
-			if ($estudianteVerificado == null)
-				return $this->failNotFound('No se ha encontrado un cliente con el id: '.$id);
-
-
-			if ($this->model->delete($id)):
-				return $this->respondDeleted($estudianteVerificado);
-			else:
-				return $this->failServerError('No se ha podido eliminar el registro');
-			endif;
-		} catch (\Exception $e) {
-			return $this->failServerError('Ha ocurrido un error en el servidor');
-		}	
-	}
-	
 }
