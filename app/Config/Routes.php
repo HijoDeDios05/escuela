@@ -32,7 +32,7 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
 $routes->post('/auth/login', 'Auth::login');
-$routes->group('api',['namespace' => 'App\Controllers\API'], function($routes){
+$routes->group('api',['namespace' => 'App\Controllers\API','filter' => 'authFilter'], function($routes){
 	$routes->get('estudiantes', 'Estudiantes::index');
 	$routes->post('estudiantes/create', 'Estudiantes::create'); 
 	$routes->get('estudiantes/edit/(:num)', 'Estudiantes::edit/$1');
