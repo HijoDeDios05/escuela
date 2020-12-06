@@ -35,7 +35,7 @@ class AuthFilter implements FilterInterface {
 
                 return true;
         }catch (ExpiredException $ee) {
-            return Services::response()->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED, 'Token caducado');
+            return Services::response()->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED, 'Token expirado we');
         } 
         catch (\Exception $e) {
             return Services::response()->getStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR, 'Ha ocurrido un error en el servidor');
