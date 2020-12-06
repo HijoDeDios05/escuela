@@ -9,9 +9,7 @@ class Auth extends BaseController
 {
     use ResponseTrait;
 
-    /**
-     * Class constructor.
-     */
+   
     public function __construct()
     {
     }
@@ -28,7 +26,7 @@ class Auth extends BaseController
             if($validateUsuario == null)
                 return $this->failNotFound('Usuario o pass no validos');
 
-            // return $this->respond('Usuario encontrado');
+           
             $jwt = $this->generateJWT($validateUsuario);
             return $this->respond(['token' => $jwt], 200);
 
